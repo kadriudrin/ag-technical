@@ -1,7 +1,6 @@
 import type { Scene } from '../../../lib/scene';
 import { Sprite, Container, Assets, Point, BitmapText } from 'pixi.js';
-import { ParticleContainer, Texture } from 'pixi.js';
-import type { Application} from 'pixi.js';
+import type { Application, Texture } from 'pixi.js';
 
 export class CardStackScene implements Scene {
     name = 'Card Stack';
@@ -39,7 +38,6 @@ export class CardStackScene implements Scene {
 
         // Create a container for all cards
         this.cardContainer = new Container({ isRenderGroup: true });
-        this.staticCards = new ParticleContainer({ isRenderGroup: true });
         app.stage.addChild(this.cardContainer);
 
         // Enable z-index sorting
