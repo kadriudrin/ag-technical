@@ -22,7 +22,7 @@ export const RenderComponent = component$(() => {
             height: 480,
             backgroundColor: '#001f3f',
             antialias: false,
-            resolution: window.devicePixelRatio / 1.5,
+            resolution: 1,
         }).then(() => {
             // Append the PixiJS canvas to the container
             document.getElementById('pixi-canvas-container')?.appendChild(pixiApp.canvas);
