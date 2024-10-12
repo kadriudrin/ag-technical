@@ -1,5 +1,5 @@
-import { component$, useOnDocument, $, useVisibleTask$, noSerialize, useStore } from '@builder.io/qwik';
-import { Application } from 'pixi.js';
+import { component$, $, noSerialize, useStore, useVisibleTask$ } from '@builder.io/qwik';
+import { Application, Ticker } from 'pixi.js';
 import type { Scene } from '../../lib/scene';
 import { CardStackScene } from './scenes/card-stack.scene';
 import { TextImagesScene } from './scenes/text-images.scene';
@@ -12,34 +12,46 @@ export const RenderComponent = component$(() => {
         currentScene: noSerialize<Scene | undefined>(undefined),
     });
 
-    // Define scene names
     const sceneNames = ['CardStack', 'TextImages', 'Particles'];
 
     // Initialize the PixiJS application once the document is ready
-    useOnDocument('qinit', $(() => {
-        const pixiApp = new Application();
+    useVisibleTask$(() => {
+        const pixiApp = new Application()
         pixiApp.init({
             width: 640,
             height: 480,
-            backgroundAlpha: 0,
+            backgroundColor: '#001f3f',
+            antialias: false,
+            resolution: window.devicePixelRatio / 1.5,
         }).then(() => {
+            // Append the PixiJS canvas to the container
             document.getElementById('pixi-canvas-container')?.appendChild(pixiApp.canvas);
-            store.app = noSerialize(pixiApp);  // Assign the PixiJS app instance to the store
-        });
+
+            pixiApp.canvas.style.width = '1280px';
+            pixiApp.canvas.style.height = '960px';
+
+            Ticker.shared.add(({ deltaMS, FPS }) => {
+                store.currentScene?.tick(deltaMS, FPS);
+            });
+
+            store.app = noSerialize(pixiApp); // Assign the PixiJS app instance to the store
+        })
 
         return () => {
-            store.app?.destroy(true, { children: true });
+            // Clean up the ticker and application on destroy
+            pixiApp.ticker.stop();
+            pixiApp.destroy(true, { children: true });
         };
-    }));
+    });
 
     // Switch scene by passing the scene name
     const switchScene = $((name: string) => {
         if (store.currentScene) {
-            store.currentScene.destroy();  // Destroy the current scene
+            store.currentScene.destroy(); // Destroy the current scene
         }
 
         let newScene: Scene | undefined;
-        switch(name) {
+        switch (name) {
             case 'CardStack':
                 newScene = new CardStackScene();
                 break;
@@ -53,21 +65,10 @@ export const RenderComponent = component$(() => {
                 return;
         }
 
-        store.currentScene = noSerialize(newScene);  // Set the new current scene in the store
+        store.currentScene = noSerialize(newScene);
         if (store.app && newScene) {
-            newScene.start(store.app);  // Start the new scene
+            newScene.start(store.app);
         }
-    });
-
-    // Manage animation frame ticking for the current scene
-    useVisibleTask$(() => {
-        const ticker = () => {
-            if (store.currentScene) {
-                store.currentScene.tick(); // Call the tick function for the active scene
-            }
-            requestAnimationFrame(ticker);
-        };
-        ticker(); // Start the animation loop
     });
 
     return (
@@ -84,4 +85,3 @@ export const RenderComponent = component$(() => {
         </div>
     );
 });
-
