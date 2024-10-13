@@ -4,6 +4,7 @@ import type { Application, Texture } from 'pixi.js';
 
 export class CardStackScene implements Scene {
     name = 'Card Stack';
+    started = false;
 
     private app!: Application;
     private cardContainer!: Container;
@@ -44,6 +45,30 @@ export class CardStackScene implements Scene {
         this.cardContainer.sortableChildren = true;
         this.cardContainer.interactive = false;
         this.cardContainer.interactiveChildren = false;
+
+        this.leftCount = this.totalCards;
+        this.rightCount = 0;
+
+        const style = { fill: 'white', fontSize: 16 };
+
+        this.leftCountText = new BitmapText({ text: `Left Stack: ${this.leftCount}`, style });
+        this.leftCountText.x = 25;
+        this.leftCountText.y = 10;
+        app.stage.addChild(this.leftCountText);
+
+        this.rightCountText = new BitmapText({ text: `Right Stack: ${this.rightCount}`, style });
+        this.rightCountText.x = this.app.renderer.width - 125;
+        this.rightCountText.y = 10;
+        app.stage.addChild(this.rightCountText);
+
+        this.fpsText = new BitmapText({ text: `FPS: 0`, style });
+        this.fpsText.x = app.renderer.width / 2;
+        this.fpsText.y = 10;
+        app.stage.addChild(this.fpsText);
+
+        // Initialize the last move time
+        this.lastMoveTime = performance.now();
+        this.fpsUpdateTime = performance.now();
 
         (async () => {
             // Load card texture
@@ -92,31 +117,9 @@ export class CardStackScene implements Scene {
 
                 this.cardContainer.addChild(cardContainer);
             }
+
+            this.started = true;
         })();
-
-        this.leftCount = this.totalCards;
-        this.rightCount = 0;
-
-        const style = { fill: 'white', fontSize: 16 };
-
-        this.leftCountText = new BitmapText({ text: `Left Stack: ${this.leftCount}`, style });
-        this.leftCountText.x = 25;
-        this.leftCountText.y = 10;
-        app.stage.addChild(this.leftCountText);
-
-        this.rightCountText = new BitmapText({ text: `Right Stack: ${this.rightCount}`, style });
-        this.rightCountText.x = this.app.renderer.width - 125;
-        this.rightCountText.y = 10;
-        app.stage.addChild(this.rightCountText);
-
-        this.fpsText = new BitmapText({ text: `FPS: 0`, style });
-        this.fpsText.x = app.renderer.width / 2;
-        this.fpsText.y = 10;
-        app.stage.addChild(this.fpsText);
-
-        // Initialize the last move time
-        this.lastMoveTime = performance.now();
-        this.fpsUpdateTime = performance.now();
     }
 
     tick(deltaMS: number, fps: number) {

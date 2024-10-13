@@ -31,7 +31,8 @@ export const RenderComponent = component$(() => {
             pixiApp.canvas.style.height = '960px';
 
             Ticker.shared.add(({ deltaMS, FPS }) => {
-                store.currentScene?.tick(deltaMS, FPS);
+                if (!store.currentScene?.started) return
+                store.currentScene.tick(deltaMS, FPS);
             });
 
             store.app = noSerialize(pixiApp); // Assign the PixiJS app instance to the store

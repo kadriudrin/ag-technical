@@ -5,6 +5,7 @@ import type { Texture } from 'pixi.js';
 
 export class TextImagesScene implements Scene {
     name = 'Text + Images';
+    started = false;
 
     private app!: Application;
     private displayContainer!: Container;
@@ -25,7 +26,7 @@ export class TextImagesScene implements Scene {
         ['text', 'text', 'text'],
     ];
 
-    async start(app: Application) {
+    start(app: Application) {
         this.app = app;
 
         // container to hold the mixed text and images
@@ -34,9 +35,14 @@ export class TextImagesScene implements Scene {
 
         const texturePaths = ['/emoji1.png', '/emoji2.png', '/icon1.png', '/icon2.png', '/money.png'];
         const texturePromises = texturePaths.map((path) => Assets.load<Texture>(path));
-        this.textures = await Promise.all(texturePromises);
 
         this.lastUpdateTime = performance.now();
+
+        Promise.all(texturePromises).then((textures) => {
+            this.textures = textures
+
+            this.started = true
+        });
     }
 
     tick(deltaMS: number, fps: number) {
