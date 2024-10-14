@@ -40,5 +40,9 @@
     "undici": "*",
     "vite": "5.3.5",
     "vite-tsconfig-paths": "^4.2.1"
+  },
+  "dependencies": {
+    "@barvynkoa/particle-emitter": "^0.0.1",
+    "pixi.js": "^8.5.0"
   }
 }

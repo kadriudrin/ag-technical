@@ -1,65 +1,56 @@
-# Qwik City App ⚡️
+# Card Stacking Scene
 
-- [Qwik Docs](https://qwik.dev/)
-- [Discord](https://qwik.dev/chat)
-- [Qwik GitHub](https://github.com/QwikDev/qwik)
-- [@QwikDev](https://twitter.com/QwikDev)
-- [Vite](https://vitejs.dev/)
+In this scene, 144 cards move smoothly from the left stack to the right one.
+
+## Challenges
+
+- **Optimization for Low-End Devices:** Running Manjaro Linux with software rendering by default was a hiccup at first since I wasn't understanding why I wasn't getting ideal performance, but testing on Windows showed smooth performance even with CPU throttling.
+
+## Solutions
+
+- **Using `isRenderGroup: true`:** While `ParticleContainer` with `Particle` is the most optimized approach, I found that using a regular `Container` with `isRenderGroup: true` was performant enough and worked great on with CPU throttling too!
 
 ---
 
-## Project Structure
+# Text and Images Scene
 
-This project is using Qwik with [QwikCity](https://qwik.dev/qwikcity/overview/). QwikCity is just an extra set of tools on top of Qwik to make it easier to build a full site, including directory-based routing, layouts, and more.
+This scene randomly displays a combination of text and images/emoticons, updating every two seconds.
 
-Inside your project, you'll see the following directory structure:
+## Challenges
 
-```
-├── public/
-│   └── ...
-└── src/
-    ├── components/
-    │   └── ...
-    └── routes/
-        └── ...
-```
+- **Positioning Text and Images Together:** Aligning text and images so they appear as a single unit.
 
-- `src/routes`: Provides the directory-based routing, which can include a hierarchy of `layout.tsx` layout files, and an `index.tsx` file as the page. Additionally, `index.ts` files are endpoints. Please see the [routing docs](https://qwik.dev/qwikcity/routing/overview/) for more info.
+## Solutions
 
-- `src/components`: Recommended directory for components.
+- **Calculating Exact Widths:** By using the exact widths of text and image elements, I could position them precisely next to each other.
 
-- `public`: Any static assets, like images, can be placed in the public directory. Please see the [Vite public directory](https://vitejs.dev/guide/assets.html#the-public-directory) for more info.
+---
 
-## Add Integrations and deployment
+# Fire Particle Scene 🔥
 
-Use the `npm run qwik add` command to add additional integrations. Some examples of integrations includes: Cloudflare, Netlify or Express Server, and the [Static Site Generator (SSG)](https://qwik.dev/qwikcity/guides/static-site-generation/).
+I created a custom fire particle effect without relying on external libraries.
 
-```shell
-npm run qwik add # or `yarn qwik add`
-```
+## Challenges
 
-## Development
+- **PixiJS v8.5 Compatibility:** Most existing particle emitter libraries were built for older PixiJS versions and didn't work with the newest PixiJS version.
+- **Dynamic Properties with `ParticleContainer`:** Initially, I couldn't get dynamic properties like `alpha` and `tint` to update over time when using `ParticleContainer` with `Particle`.
 
-Development mode uses [Vite's development server](https://vitejs.dev/). The `dev` command will server-side render (SSR) the output during development.
+## Solutions
 
-```shell
-npm start # or `yarn start`
-```
+- **Building a Custom Particle System:** I developed my own simple particle emitter using `Container` and `Sprite`.
+- **Optimizing for Low Particle Count:** Since there are at most 10 sprites on the screen, using `Container` doesn't impact performance and runs smoothly with maximum CPU throttling as well.
 
-> Note: during dev mode, Vite may request a significant number of `.js` files. This does not represent a Qwik production build.
+---
 
-## Preview
+# Learning Qwik
 
-The preview command will create a production build of the client modules, a production build of `src/entry.preview.tsx`, and run a local server. The preview server is only for convenience to preview a production build locally and should not be used as a production server.
+As a bonus, this was my first time using Qwik during this technical assessment!
 
-```shell
-npm run preview # or `yarn preview`
-```
+## Challenges
 
-## Production
+- **Client-Side State Management:** Qwik is SSR by default and serializes all component state, which caused some initial hiccups.
 
-The production build will generate client and server modules by running both client and server build commands. The build command will use Typescript to run a type check on the source code.
+## Solutions
 
-```shell
-npm run build # or `yarn build`
-```
+- **Using `noSerialize` and `useVisibleTask`:** I overcame the state management issues by using `noSerialize` to prevent certain objects from being serialized and `useVisibleTask` for handling client-side tasks logic.
+
